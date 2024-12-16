@@ -70,9 +70,9 @@ def run_episodes(env, episodes, base_q_network, better_agent, optimizer, lr, los
         y_tensor = torch.stack(y).to(device)
         dataset = TensorDataset(X_tensor, y_tensor)
         dataloader = DataLoader(dataset, batch_size=4096, shuffle=True)
-
+        
         # Huấn luyện mô hình
-        train_model(100, dataloader, better_agent, optimizer, lr, loss_function)
+        train_model(1000, dataloader, better_agent, optimizer, lr, loss_function)
 
         # Đánh giá và lưu mô hình nếu nó có sự cải thiện
         if episode % 3 == 0:

@@ -15,7 +15,7 @@ def numpy_cpu(array):
 
 def convert_obs(observation):
     return (
-            torch.Tensor(observation).float().permute([2, 0, 1]).unsqueeze(0)
+            torch.Tensor(observation).float().permute([2, 0, 1]).unsqueeze(0).to(device)
         )
 
 def get_action(envir, episode, agent, observation, network : nn.Module, policy : str):

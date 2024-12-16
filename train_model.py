@@ -24,8 +24,7 @@ def train_1_epoch(num, dataloader, model, optimizer, lr, loss_fn):
 
 def train_model(num_epoch, dataloader, model, optimzer, lr, loss_fn):
     current_loss = 100
-    while(current_loss > 0.001):
-        for epoch in range(1, num_epoch + 1):
-            current_loss = train_1_epoch(epoch, dataloader, model, optimzer, lr, loss_fn)
+    for epoch in range(1, num_epoch + 1):
+      current_loss = train_1_epoch(epoch, dataloader, model, optimzer, lr, loss_fn)
             #print(f'Epoch number {epoch} loss : {current_loss}')
         
