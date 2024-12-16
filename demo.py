@@ -2,27 +2,33 @@ from magent2.environments import battle_v4
 import os
 import cv2
 import sys
-
+import torch
 
 if __name__ == "__main__":
-    demo_env = battle_v4.env(map_size=45, max_cycles = 300, render_mode="rgb_array")
+    # Kiểm tra xem có CUDA hay không, nếu không thì sử dụng CPU
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    
+    # Khởi tạo môi trường và thiết lập
+    demo_env = battle_v4.env(map_size=45, max_cycles=300, render_mode="rgb_array")
     demo_env.reset()
     vid_dir = "video"
     os.makedirs(vid_dir, exist_ok=True)
     fps = 32
     frames = []
     
-
-    # pretrained policies
+    # Pretrained policies
     import base_model
     import resnet
-    import torch
-
+    
     q_network = resnet.QNetwork(
         demo_env.observation_space("blue_0").shape, demo_env.action_space("blue_0").n
     )
+    
+    # Chuyển mô hình lên GPU nếu có
+    q_network.to(device)
+    
     q_network.load_state_dict(
-        torch.load("model/agent_1.pth", weights_only=True, map_location="cuda")
+        torch.load("model/agent_2_better_train.pth", weights_only=True, map_location=device)
     )
 
     red_cnt = 81
@@ -44,12 +50,13 @@ if __name__ == "__main__":
             action = None  # this agent has died
         else:
             if agent_handle == "blue":
+                # Chuyển observation lên GPU nếu cần
                 observation = (
-                    torch.Tensor(observation).float().permute([2, 0, 1]).unsqueeze(0)
+                    torch.Tensor(observation).float().permute([2, 0, 1]).unsqueeze(0).to(device)
                 )
                 with torch.no_grad():
                     q_values = q_network(observation)
-                action = torch.argmax(q_values, dim=1).numpy()[0]
+                action = torch.argmax(q_values, dim=1).cpu().numpy()[0]  # Chuyển kết quả trở lại CPU
             else:
                 action = demo_env.action_space(agent).sample()
         
