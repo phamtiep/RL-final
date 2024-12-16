@@ -7,8 +7,10 @@ import random
 import sys
 from torch.utils.data import DataLoader, TensorDataset
 import time
+from replay import gather_training_data
 from utils import *
-
+from evaluate_fight import evaluate
+from train_model import train_model
 def debug(var):
     print(var)
     sys.exit()
@@ -55,28 +57,36 @@ lr = 0.001
 optimizer = optim.Adam(better_agent.parameters(), lr=lr)
 loss_function = nn.MSELoss()
 
+def run_episodes(env, episodes, base_q_network, better_agent, optimizer, lr, loss_function, best_score=100):
+    for episode in range(1, episodes + 1):
+        print(f'Episode number {episode} running...................................')
+
+       
+        X, y = gather_training_data(env, episode, base_q_network, better_agent)
+
+        # Convert training data to tensors
+        X_tensor = torch.stack(X)
+        y_tensor = torch.stack(y)
+        dataset = TensorDataset(X_tensor, y_tensor)
+        dataloader = DataLoader(dataset, batch_size=1024, shuffle=True)
+
+        # Train the model
+        train_model(100, dataloader, better_agent, optimizer, lr, loss_function)
+
+        # Evaluate and save the model if it improves
+        if episode % 3 == 0:
+            avg = evaluate(red_agent=base_q_network, blue_agent=better_agent, rounds=5, debug=True)
+            if avg < best_score:
+                torch.save(better_agent.state_dict(), 'model/myagent.pth')
+                print('Agent saved !')
+                print()
+                best_score = avg
+    return best_score
 
 
-
-#==================================Training for 100 episodes============================================================
-
-
-
-    X_tensor = torch.stack(X)
-    y_tensor = torch.stack(y)
-    dataset = TensorDataset(X_tensor, y_tensor)
-    dataloader = DataLoader(dataset, batch_size=1024, shuffle=True)
-
-    #Train model with given data
-    train_model(100, dataloader, better_agent, optimizer, lr, loss_function)
-
-    if (episode % 5 == 0):
-        avg = evaluate(red_agent=base_q_network, blue_agent=better_agent, rounds=5, debug = True)
-        if (avg < best_score):
-            torch.save(better_agent.state_dict(), 'model/agent_1.pth')
-            print('Agent saved !')
-            print()
-            best_score = avg
+best_score = run_episodes(env, episodes= 50, base_q_network= base_q_network, better_agent= better_agent,
+                                                       optimizer= optimizer, lr=lr, loss_function=loss_function,
+                                        )
 
 print(best_score)
 env.close()
