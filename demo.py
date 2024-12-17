@@ -28,10 +28,10 @@ if __name__ == "__main__":
     q_network.to(device)
     
     q_network.load_state_dict(
-        torch.load("model/myagent.pth", weights_only=True, map_location=device)
+        torch.load("model/agent_kamikaze.pth", weights_only=True, map_location=device)
     )
 
-    q_network = 
+
 
     red_cnt = 81
     blue_cnt = 81
