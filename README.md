@@ -13,3 +13,22 @@ Dự án này bao gồm các phần chính:
 
 Dự án có cấu trúc thư mục như sau:
 
+### Mô tả chi tiết các tệp
+## Folder models
+  - Lưu giữ các tham số cho mô hình huấn luyện dqn-blue-final là tham số cuối cùng
+#### 1. **q_network.py**
+
+#### 2. **replay_buffer.py**
+   - Tệp này định nghĩa lớp `MultiAgentReplayBuffer`, bộ đệm lưu trữ các chuyển trạng thái (transitions) của các tác tử trong môi trường.
+
+#### 3. **optimize.py**
+   - Tệp này chứa các hàm để tối ưu hóa mô hình, bao gồm việc tính toán hàm mất mát và cập nhật trọng số của mô hình.
+#### 4. **policy.py**
+   - Quyết định mức độ khám phá của mô hình
+#### 5. **train.py**
+   - Huấn luyện mô hình
+#### 6. **myNetwork.py**
+   - Định nghĩa mạng neural network điều khiển agent trong mô hình
+#### 7. **main.py**
+   - Tệp chính để khởi tạo mô hình, bộ đệm, và quá trình huấn luyện. Đây là nơi bạn có thể chạy các thử nghiệm hoặc huấn luyện mô hình trên môi trường MARL.
+
