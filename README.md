@@ -1,4 +1,4 @@
-# Multi-Agent Reinforcement Learning (MARL) with QNetwork
+# Multi-Agent Reinforcement Learning (MARL) with DQN
 
 ## Mô tả dự án
 
@@ -15,7 +15,7 @@ Dự án có cấu trúc thư mục như sau:
 
 ### Mô tả chi tiết các tệp
 #### Folder models
-  - Lưu giữ các tham số cho mô hình huấn luyện dqn-blue-final.pt là tham số cuối cùng của mô hình
+  - Lưu giữ các tham số cho mô hình huấn luyện blue_dqn_final.pt là tham số cuối cùng của mô hình
 #### 1. **replay_buffer.py**
    - Tệp này định nghĩa lớp `MultiAgentReplayBuffer`, bộ đệm lưu trữ các chuyển trạng thái (transitions) của các tác tử trong môi trường.
 #### 2. **optimize.py**
