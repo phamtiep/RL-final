@@ -28,7 +28,7 @@ class QNetwork(nn.Module):
             x = x.unsqueeze(0)
         else:
             batchsize = x.shape[0]
-        x = torch.fliplr(x).permute(0,3,1,2) # flip left-right because blue agent observe identically with red agent
+        x = torch.fliplr(x).permute(0,3,1,2)
         x = self.cnn(x)
         x = x.reshape(batchsize, -1)
         return self.network(x)

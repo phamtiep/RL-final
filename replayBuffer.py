@@ -9,7 +9,6 @@ class MultiAgentReplayBuffer:
         self.observation_shape = observation_shape
         self.action_shape = action_shape
 
-        # Use a defaultdict to automatically create deques for new agents
         self.buffers = defaultdict(lambda: {
             'obs': deque(maxlen=capacity),
             'action': deque(maxlen=capacity),
@@ -28,14 +27,12 @@ class MultiAgentReplayBuffer:
     def sample(self, batch_size):
         all_agent_ids = list(self.buffers.keys())
         if not all_agent_ids:
-            return None  # No agents in the buffer
+            return None 
 
-        # Check if we have enough data to sample
         total_transitions = sum(len(self.buffers[agent_id]['obs']) for agent_id in all_agent_ids)
         if total_transitions < batch_size:
             return None
 
-        # Collect transitions from all agents into a single list
         all_transitions = []
         for agent_id in all_agent_ids:
             agent_buffer = self.buffers[agent_id]
@@ -48,10 +45,8 @@ class MultiAgentReplayBuffer:
                     'done': agent_buffer['done'][i]
                 })
 
-        # Sample indices from the combined transitions
         indices = np.random.choice(len(all_transitions), batch_size, replace=False)
 
-        # Extract the sampled transitions
         obs_batch = np.array([all_transitions[i]['obs'] for i in indices])
         action_batch = np.array([all_transitions[i]['action'] for i in indices])
         reward_batch = np.array([all_transitions[i]['reward'] for i in indices])
