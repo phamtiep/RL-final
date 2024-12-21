@@ -14,17 +14,16 @@ if __name__ == "__main__":
     fps = 15
     frames = []
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    myAgent = myQNetwork(env.observation_space("blue_0").shape, env.action_space("blue_0").n).to(device) # Move model to device
+    myAgent = myQNetwork(env.observation_space("blue_0").shape, env.action_space("blue_0").n).to(device)
     myAgent.load_state_dict(
-        torch.load("models/blue_dqn_final.pt", map_location=device, weights_only=True) # Load weights to the same device
+        torch.load("models/blue_dqn_final.pt", map_location=device, weights_only=True)
     )
-    # random policies
     env.reset()
     for agent in env.agent_iter():
         obs, reward, termination, truncation, info = env.last()
 
         if termination or truncation:
-            action = None  # this agent has died
+            action = None
         else:
             agent_handle = agent.split("_")[0]
             observation = (
@@ -58,7 +57,6 @@ if __name__ == "__main__":
     out.release()
     print("Done recording random agents")
 
-    # pretrained policies
     frames = []
     env.reset()
 
@@ -76,7 +74,7 @@ if __name__ == "__main__":
         obs, reward, termination, truncation, info = env.last()
 
         if termination or truncation:
-            action = None  # this agent has died
+            action = None
         else:
             agent_handle = agent.split("_")[0]
             
@@ -113,7 +111,6 @@ if __name__ == "__main__":
     out.release()
     print("Done recording pretrained agents")
 
-    #neuw pretrained policies
     q_network = QNetwork(
         env.observation_space("red_0").shape, env.action_space("red_0").n
     )
@@ -127,7 +124,7 @@ if __name__ == "__main__":
         obs, reward, termination, truncation, info = env.last()
 
         if termination or truncation:
-            action = None  # this agent has died
+            action = None
         else:
             agent_handle = agent.split("_")[0]
             

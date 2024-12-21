@@ -32,7 +32,7 @@ def train_agents(env, num_episodes, policy_net, target_net, red_policy_net, buff
             episode_reward += reward
 
             if done:
-                action = None  # Agent is dead
+                action = None 
                 env.step(action)
             else:
                 agent_handle = agent.split("_")
@@ -40,7 +40,7 @@ def train_agents(env, num_episodes, policy_net, target_net, red_policy_net, buff
                 agent_team = agent_handle[0]
                 if agent_team == "blue":
 
-                    buffer.update_last_reward(agent_id, reward) # update reward of last agent's action (bad environment!)
+                    buffer.update_last_reward(agent_id, reward)
 
                     action = policy( observation,policy_net, env, steps_done,  EPS_START=EPS_START, EPS_END=EPS_END, EPS_DECAY=EPS_DECAY, device=device )
                     env.step(action)
@@ -52,16 +52,12 @@ def train_agents(env, num_episodes, policy_net, target_net, red_policy_net, buff
                         next_observation = None
                         agent_done = True
 
-                    reward = 0 # Wait for next time to be selected to get reward
+                    reward = 0 
 
-                    # Store the transition in buffer
                     buffer.push(agent_id, observation, action, reward, next_observation, agent_done)
 
-                    # Perform one step of the optimization (on the policy network)
                     optimize_model(policy_net, target_net, optimizer, buffer, BATCH_SIZE, GAMMA, device)
 
-                    # Soft update of the target network's weights
-                    # θ′ ← τ θ + (1 −τ )θ′
                     target_net_state_dict = target_net.state_dict()
                     policy_net_state_dict = policy_net.state_dict()
                     for key in policy_net_state_dict:
@@ -69,14 +65,11 @@ def train_agents(env, num_episodes, policy_net, target_net, red_policy_net, buff
                     target_net.load_state_dict(target_net_state_dict)
 
                 else:
-                    # red agent
                     action = policy( observation,red_policy_net, env, steps_done,  EPS_START=EPS_START, EPS_END=EPS_END, EPS_DECAY=EPS_DECAY, device=device )
                     env.step(action)
-            # Periodically update the red agent's policy with the blue agent's learned policy
             if i_episode % 4 == 0 and i_episode < 24:
-                # Copy all weights and biases from the blue agent's policy network to the red agent's
                 red_policy_net.load_state_dict(policy_net.state_dict())
-            elif i_episode == 24: # more complex (pretrained) opponent
+            elif i_episode == 24:
                 red_policy_net.load_state_dict(pretrained_net.state_dict())
         episode_rewards.append(episode_reward)
         episode_losses.append(running_loss)
